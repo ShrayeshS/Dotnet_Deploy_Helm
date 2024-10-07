@@ -1,0 +1,8 @@
+steps:
+  - script: |
+      git fetch --tags
+      tag=$(git describe --tags $(git rev-list --tags --max-count=1))
+      echo "##vso[task.setvariable variable=APP_VER]$tag"
+      echo "tag: $tag"
+      echo "The latest tag on the branch is: $APP_VER"
+    displayName: 'Get Tag for Branch'
