@@ -1,0 +1,22 @@
+parameters:
+- name: chart_ver
+  type: string
+  default: ''
+  
+steps:
+  #- task: HelmDeploy@1
+  #  inputs:
+  #    azureSubscriptionForACR: 'DXO_Service_Connection'
+  #    azureResourceGroupForACR: 'DSOKITTest'
+  #    azureContainerRegistry: 'dsocontainerregistry.azurecr.io'
+  #    command: 'package'
+  #    chartPath: '$(Build.SourcesDirectory)/helm/dotnet'
+  #    chartVersion: '${{ parameters.chart_ver }}'
+      #arguments: '--values $(Build.SourcesDirectory)/helm/dotnet/${{ parameters.values }}'
+#      chartNameForACR: 'dotnet-dev'
+#      chartPathForACR: '$(Build.SourcesDirectory)/helm/dotnet'
+  #  displayName: 'Helm Package'
+
+  - script: |
+      helm package --version ${{ parameters.chart_ver }} $(Build.SourcesDirectory)/helm/dotnet
+    displayName: 'Helm Package'           

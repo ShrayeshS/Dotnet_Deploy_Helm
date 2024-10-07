@@ -17,6 +17,8 @@ parameters:
 
 stages:
  - stage: ${{ parameters.stageName }}              # Define a stage based on input parameter 'stageName'
-   condition: ${{ parameters.condition }}           # Specify a condition for the stage based on input parameter 'condition'
+   #condition: ${{ parameters.condition }}           # Specify a condition for the stage based on input parameter 'condition'
+   pool:
+     name: 'SonarQube Integration Agent Pool'
    jobs:
     - template: ../jobs/cen_build_push_image.yml    # Use a job template to build and push an image with specified configurations

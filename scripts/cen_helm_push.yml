@@ -1,0 +1,17 @@
+parameters:
+- name: acr
+  type: string
+  default: ''
+
+- name: repo
+  type: string
+  default: ''
+
+- name: chart_ver
+  type: string
+  default: ''
+
+steps:
+  - script: |
+      sudo helm push $(Build.SourcesDirectory)/dotnet-${{ parameters.chart_ver }}.tgz oci://${{ parameters.acr }}.azurecr.io/${{ parameters.repo }}
+    displayName: 'Helm Push to ACR'

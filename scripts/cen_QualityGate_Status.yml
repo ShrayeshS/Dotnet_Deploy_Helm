@@ -49,8 +49,8 @@ steps:
               SMTP_SERVER="smtp-us.ser.proofpoint.com"
               SMTP_PORT=587
               FROM="noreply@cencora.com"
-              #TO="Shweta.Pachbhai@cencora.com"
-              TO="shrayesh.sreenivasan@cencora.com"
+              TO="Shweta.Pachbhai@cencora.com"
+              #TO="shrayesh.sreenivasan@cencora.com"
               SUBJECT="SonarQube Quality gate failed"
 
               #Prepare email message

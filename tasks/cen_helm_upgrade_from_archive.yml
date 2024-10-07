@@ -1,0 +1,35 @@
+parameters:
+- name: k8s_cluster
+  type: string
+  default: ''
+
+- name: release
+  type: string
+  default: ''
+
+- name: values
+  type: string
+  default: ''
+
+- name: env
+  type: string
+  default: ''
+
+- name: chart_ver
+  type: string
+  default: ''
+
+steps:
+- task: HelmDeploy@1
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscription: 'DXO_Service_Connection'
+    azureResourceGroup: 'DXO_Integration_RG'
+    kubernetesCluster: '${{ parameters.k8s_cluster }}_${{ parameters.env }}'
+    command: 'upgrade'
+    chartType: 'FilePath'
+    chartPath: '$(Build.SourcesDirectory)/dotnet-${{ parameters.chart_ver }}.tgz'
+    chartVersion: '${{ parameters.chart_ver }}'
+    releaseName: '${{ parameters.release }}-${{ parameters.env }}'
+    valueFile: $(Build.SourcesDirectory)/helm/dotnet/${{ parameters.values }}
+  displayName: 'Helm Install from Pulled Archive'

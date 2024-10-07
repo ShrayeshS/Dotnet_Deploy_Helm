@@ -11,7 +11,7 @@ pr:
     include:
       - '*'
 
-po ol:
+pool:
   name: 'SonarQube Integration Agent Pool'
 
 variables:

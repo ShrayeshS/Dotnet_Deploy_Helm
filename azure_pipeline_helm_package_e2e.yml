@@ -1,0 +1,359 @@
+trigger: none
+
+pool:
+  name: 'DXO Integration Agent Pool'
+
+variables:
+  - template: variables/application-variables.yml
+  - template: variables/acr-variables.yml
+  - template: variables/aks-variables.yml
+  - template: variables/sonarQube-variables.yml
+
+stages:
+  - stage: Test
+    jobs:
+      - job: Test
+        steps:
+          - script: |
+              git fetch --tags
+              tag=$(git describe --tags $(git rev-list --tags --max-count=1))
+              echo "##vso[task.setvariable variable=APP_VER]$tag"
+              echo "tag: $tag"
+              echo "The latest tag on the branch is: $APP_VER"
+            displayName: 'Get Tag for Branch'
+
+
+          #- template: tasks/cen_keyVault_connect.yml
+
+          #- template: scripts/cen_install_azure_cli.yml
+          #- template: scripts/cen_install_kubectl.yml
+
+          #- script: |
+          #    sudo az login --service-principal -u $(AZCLIUNAME) -p $(AZCLIPWD) --tenant $(TENANTID)  # Authenticate using service principal credentials
+          #    sudo az account set --subscription $(SUBSCRIPTION)                                       # Set the Azure subscription context
+          #    sudo az acr login --name $(ACRNAME) --resource-group $(ACRRG)                            # Login to Azure Container Registry
+          #    sudo docker build -t $(ACRNAME).azurecr.io/$(REPO_NAME):$(APP_VER) .                         # Build Docker image with specified tag
+          #    sudo docker push $(ACRNAME).azurecr.io/$(REPO_NAME):$(APP_VER)                                      # Push the built Docker image to Azure Container Registry
+          #  displayName: 'Build Docker Imge'
+          
+          #- script: |
+          #    #!/bin/bash
+          #    sudo az login --service-principal -u $(AZCLIUNAME) -p $(AZCLIPWD) --tenant $(TENANTID)
+          #    sudo az account set --subscription $(SUBSCRIPTION)
+          #    sudo az acr login --name $(ACRNAME) --resource-group $(ACRRG)
+              # Retrieve ACR login server and resource group using Azure CLI commands
+          #    sudo az aks get-credentials --resource-group ${{ variables.AKS_RG }} --name "${{ variables.K8S_CLUSTER }}_dev"
+              # Get AKS credentials and set up kubectl context for the K8S_Agent cluster
+          #    sudo kubectl config get-contexts
+          #  displayName: 'Azure Login'
+
+          #- script: |
+          #    sed -i "s/^version:.*$/version: $(APP_VER)/" $(Build.SourcesDirectory)/helm/dotnet/Chart.yaml
+          #    sed -i "s/^appVersion:.*$/appVersion: $(APP_VER)/" $(Build.SourcesDirectory)/helm/dotnet/Chart.yaml
+          #  displayName: 'Edit the Chart'
+          
+          #- script: |
+          #    # Replace placeholder in Helm values file
+          #    sed -i 's/{{ IMAGE_VERSION }}/$(APP_VER)/g' $(Build.SourcesDirectory)/helm/dotnet/values.yaml
+          #    sed -i 's/{{ IMAGE_VERSION }}/$(APP_VER)/g' $(Build.SourcesDirectory)/helm/dotnet/values-dev.yaml
+          #    sed -i 's/{{ IMAGE_VERSION }}/$(APP_VER)/g' $(Build.SourcesDirectory)/helm/dotnet/values-qa.yaml
+          #    helm version
+          #  displayName: 'Edit Helm Values File'
+
+          #- template: scripts/cen_helm_uninstall.yml
+          #  parameters:
+          #    release: 'dotnet-helm'
+          #    env: 'dev'
+          
+             
+          #- template: tasks/cen_helm_ls.yml
+          #  parameters:
+          #    k8s_cluster: $(K8S_CLUSTER)
+          #    env: 'dev'
+
+          #- template: scripts/cen_helm_show_template.yml
+          #  parameters:
+          #   values: 'values-dev.yaml'
+
+          #- template: scripts/cen_helm_repo_add.yml
+          #  parameters:
+          #    acr: $(ACRNAME)
+
+          #- template: tasks/cen_helm_package.yml
+          #  parameters:
+          #    chart_ver: $(APP_VER)
+                                
+          #- template: tasks/cen_helm_ls.yml
+          #  parameters:
+          #    k8s_cluster: $(K8S_CLUSTER)
+          #    env: 'dev'
+
+          #- template: scripts/cen_helm_push.yml
+          #  parameters:
+          #    acr: $(ACRNAME)
+          #    repo: 'dotnet-helm-dev'
+          #    chart_ver: $(APP_VER)
+
+          #- template: scripts/cen_helm_push.yml
+          #  parameters:
+          #    acr: $(ACRNAME)
+          #    repo: 'dotnet-helm-qa'
+          #    chart_ver: $(APP_VER)
+
+          #- template: scripts/cen_helm_pull.yml
+          #  parameters:
+          #    acr: $(ACRNAME)
+          #    repo: 'dotnet-helm-dev'
+          #    chart_ver: $(APP_VER)
+
+          #- template: tasks/cen_helm_upgrade_from_archive.yml
+          #  parameters:
+          #    k8s_cluster: $(K8S_CLUSTER)
+          #    release: 'dotnet-helm'
+          #    values: 'values-dev.yaml'
+          #    env: 'dev'
+          #    chart_ver: $(APP_VER)
+            
+          #- template: tasks/cen_helm_upgrade_archive_override.yml
+          #  parameters:
+          #    k8s_cluster: $(K8S_CLUSTER)
+          #    release: 'dotnet-helm'
+          #    values: 'values-dev.yaml'
+          #    env: 'dev'
+          #    chart_ver: $(APP_VER)
+          #    image_version: '1.1.1'
+
+          #- template: tasks/cen_helm_ls.yml
+          #  parameters:
+          #    k8s_cluster: $(K8S_CLUSTER)
+          #    env: 'dev'
+          
+          #- task: AzureCLI@2
+          #  inputs:
+          #    azureSubscription: 'ARGOCD_CONNECTION-dxo'
+          #    scriptType: 'bash'
+          #    scriptLocation: 'inlineScript'
+          #    inlineScript: |
+          #      az keyvault secret show --vault-name DXOKeyVault --name DSO-Helm > $(Build.SourcesDirectory)/release.json
+          #      az keyvault secret set --vault-name DXOKeyVault --name DSO-Helm --value r1
+          #      az keyvault secret show --vault-name DXOKeyVault --name DSO-Helm > $(Build.SourcesDirectory)/release.json
+
+ #- template: stages/cen_dotnet_PR_stage.yml  #Include the stage-level template
+ #  parameters:
+ #    stageName: 'PRValidation' # Specify the stage name
+ #    #condition: eq(variables['Build.Reason'], 'PullRequest')
+    
+ #- template: stages/cen_dotnet_CI_stage.yml  # Include the stage-level templat
+ #  parameters:
+ #    stageName: 'CI'  # Specify the stage name
+ #    #condition: ne(variables['Build.Reason'], 'PullRequest')
+
+ #- stage: CD
+ #  displayName: CD
+ #  #dependsOn: CI
+ #  pool:
+ #    name: 'New SonarQube Integration Agent Pool'
+ #  jobs:
+ #    - deployment: Dev
+ #      displayName: "Deploy to Dev"
+ #      environment: "Helm-Dev"
+ #      strategy:
+ #        runOnce:    #rolling, canary are the other strategies that are supported
+ #          deploy:
+ #            steps:
+ #              - checkout: self
+ #              - template: tasks/cen_keyVault_connect.yml          # Include a template for connecting to Key Vault
+ #              - template: scripts/cen_install_azure_cli.yml
+ #              - template: scripts/cen_install_kubectl.yml         # Template to install kubectl
+ #              #- template: scripts/cen_helm_get_version.yml
+ #              - task: CmdLine@2
+ #                inputs:
+ #                  script: |
+ #                    #!/bin/bash
+ #                    version=$(awk -F ": " '/version:/ {print $2}' Chart.yaml | tr -d '[:space:]')
+ #                    relVersion=$(awk -F ": " '/version:/ {print $2}' Chart.yaml | tr -d '[:space:]' | tr '.' '-')
+ #                    echo $version
+ #                    echo "##vso[task.setvariable variable=chart_ver]$version"
+ #                    echo "release_ver: $relVersion"
+ #                    echo "##vso[task.setvariable variable=release_ver]$relVersion"
+ #                  workingDirectory: '$(Build.SourcesDirectory)/helm/dotnet'
+ #                displayName: "Get Version"
+ #                name: SetVariableStep
+ #              - script: |
+ #                    #!/bin/bash
+ #                    sudo az login --service-principal -u $(AZCLIUNAME) -p $(AZCLIPWD) --tenant $(TENANTID)
+ #                    sudo az account set --subscription $(SUBSCRIPTION)
+ #                    sudo az acr login --name $(ACRNAME) --resource-group $(ACRRG)
+ #                        # Retrieve ACR login server and resource group using Azure CLI commands
+ #                    sudo az aks get-credentials --resource-group ${{ variables.AKS_RG }} --name "${{ variables.K8S_CLUSTER }}_dev"
+ #                        # Get AKS credentials and set up kubectl context for the K8S_Agent cluster
+ #                    sudo kubectl config get-contexts
+ #                    echo "Chart Version"
+ #                    echo $(chart_ver)
+ #                displayName: 'Azure Login'
+ #                
+ #              - template: scripts/cen_helm_show_template.yml
+ #                parameters:
+ #                  values: 'values-dev.yaml'
+ #              #- template: scripts/cen_helm_repo_add.yml
+ #              #  parameters:
+ #              #    acr: $(ACRNAME)
+               #- template: tasks/cen_helm_package.yml
+               #  parameters:
+               #    chart_ver: $(chart_ver)
+                                
+#               - template: tasks/cen_helm_ls.yml
+#                 parameters:
+#                   k8s_cluster: $(K8S_CLUSTER)
+#                   env: 'dev'
+
+               #- template: scripts/cen_helm_push.yml
+               #  parameters:
+               #    acr: $(ACRNAME)
+               #    repo: 'dotnet-helm'
+              #   chart_ver: $(chart_ver)
+
+               #- template: scripts/cen_helm_pull.yml
+               #  parameters:
+               #    acr: $(ACRNAME)
+               #    repo: 'dotnet-helm'
+               #    chart_ver: $(chart_ver)
+
+               #- template: tasks/cen_helm_upgrade_from_archive.yml
+               #  parameters:
+               #    k8s_cluster: $(K8S_CLUSTER)
+               #    release: 'dotnet-helm'
+               #    values: 'values-dev.yaml'
+               #    env: 'dev'
+               #    chart_ver: $(chart_ver)
+
+              
+               #- template: tasks/cen_helm_upgrade.yml
+               #  parameters:
+               #    k8s_cluster: $(K8S_CLUSTER)
+               #    release: 'dotnet-helm'
+               #    values: 'values-dev.yaml'
+               #    env: 'dev'
+               #    chart_ver: $(chart_ver)
+
+
+               #- template: scripts/cen_helm_uninstall.yml
+               #  parameters:
+               #    release: 'dotnet-helm'
+               #    env: 'dev'
+
+#               - template: tasks/cen_helm_rollback.yml
+#                 parameters:
+#                   k8s_cluster: $(K8S_CLUSTER)
+#                   release: 'dotnet-helm'
+#                   env: 'dev'
+# 
+#               - template: tasks/cen_helm_ls.yml
+#                 parameters:
+#                   k8s_cluster: $(K8S_CLUSTER)
+#                   env: 'dev'
+
+
+#     - deployment: QA
+#       displayName: "Deploy to QA"
+#       environment: "Helm-QA"
+#       dependsOn: Dev
+#       condition: succeeded()
+#       strategy:
+#         runOnce:    #rolling, canary are the other strategies that are supported
+#           deploy:
+#             steps:
+#               - template: tasks/cen_keyVault_connect.yml          # Include a template for connecting to Key Vault
+#               - template: scripts/cen_install_azure_cli.yml
+#               - template: scripts/cen_install_kubectl.yml         # Template to install kubectl
+               #- template: scripts/cen_helm_get_version.yml
+#               - task: CmdLine@2
+#                 inputs:
+#                   script: |
+#                     #!/bin/bash
+#                     version=$(awk -F ": " '/version:/ {print $2}' Chart.yaml | tr -d '[:space:]')
+#                     relVersion=$(awk -F ": " '/version:/ {print $2}' Chart.yaml | tr -d '[:space:]' | tr '.' '-')
+#                     echo $version
+#                     echo "##vso[task.setvariable variable=chart_ver]$version"
+#                     echo "release_ver: $relVersion"
+#                     echo "##vso[task.setvariable variable=release_ver]$relVersion"
+#                   workingDirectory: '$(Build.SourcesDirectory)/helm/dotnet'
+#                 displayName: "Get Version"
+#                 name: SetVariableStep
+#               - script: |
+#                     #!/bin/bash
+#                     sudo kubectl config delete-context cen_helm_qa
+#                     sudo az login --service-principal -u $(AZCLIUNAME) -p $(AZCLIPWD) --tenant $(TENANTID)
+#                     sudo az account set --subscription $(SUBSCRIPTION)
+#                     sudo az acr login --name $(ACRNAME) --resource-group $(ACRRG)
+#                         # Retrieve ACR login server and resource group using Azure CLI commands
+#                     sudo az aks get-credentials --resource-group ${{ variables.AKS_RG }} --name "${{ variables.K8S_CLUSTER }}_qa"
+#                         # Get AKS credentials and set up kubectl context for the K8S_Agent cluster
+#                     sudo kubectl config get-contexts
+#                     sudo kubectl get nodes
+#                     echo "Chart Version"
+#                     echo $(chart_ver)
+#                 displayName: 'Azure Login'
+                 
+#               - template: scripts/cen_helm_show_template.yml
+#                 parameters:
+#                   values: 'values-qa.yaml'
+# 
+               #- template: scripts/cen_helm_repo_add.yml
+               #  parameters:
+               #    acr: $(ACRNAME)
+ 
+               #- template: tasks/cen_helm_package.yml
+               #  parameters:
+               #    chart_ver: $(chart_ver)
+                                 
+#               - template: tasks/cen_helm_ls.yml
+#                 parameters:
+#                   k8s_cluster: $(K8S_CLUSTER)
+#                   env: 'qa'
+
+               #- template: scripts/cen_helm_push.yml
+               #  parameters:
+               #    acr: $(ACRNAME)
+               #    repo: 'dotnet-helm'
+               #    chart_ver: $(chart_ver)
+ 
+               #- template: scripts/cen_helm_pull.yml
+               #  parameters:
+               #    acr: $(ACRNAME)
+               #    repo: 'dotnet-helm'
+               #    chart_ver: $(chart_ver)
+
+               #- template: tasks/cen_helm_upgrade_from_archive.yml
+               #  parameters:
+               #    k8s_cluster: $(K8S_CLUSTER)
+               #    release: 'dotnet-helm'
+               #    values: 'values-qa.yaml'
+               #    env: 'qa'
+               #    chart_ver: $(chart_ver)
+
+              
+               #- template: tasks/cen_helm_upgrade.yml
+               #  parameters:
+               #    k8s_cluster: $(K8S_CLUSTER)
+               #    release: 'dotnet-helm'
+               #    values: 'values-qa.yaml'
+               #    env: 'qa'
+               #    chart_ver: $(chart_ver)
+
+
+               #- template: scripts/cen_helm_uninstall.yml
+               #  parameters:
+               #    release: 'dotnet-helm'
+               #    env: 'qa'
+
+#               - template: tasks/cen_helm_rollback.yml
+#                 parameters:
+#                   k8s_cluster: $(K8S_CLUSTER)
+#                   release: 'dotnet-helm'
+#                   env: 'qa'
+
+#               - template: tasks/cen_helm_ls.yml
+#                 parameters:
+#                   k8s_cluster: $(K8S_CLUSTER)
+#                   env: 'qa'

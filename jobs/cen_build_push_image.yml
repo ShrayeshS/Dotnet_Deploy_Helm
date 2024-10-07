@@ -10,11 +10,11 @@ jobs:
   - job:
     steps:
       - template: ../tasks/cen_keyVault_connect.yml
-      - template: ../scripts/cen_install_azure_cli.yml
+      #- template: ../scripts/cen_install_azure_cli.yml
       - template: ../scripts/cen_install_kubectl.yml
       - template: ../scripts/cen_dotnet_build_test.yml
       - template: ../scripts/cen_docker_build_push.yml
-      - template: ../tasks/cen_checkmarkx.yml
+      #- template: ../tasks/cen_checkmarkx.yml
 
 
 

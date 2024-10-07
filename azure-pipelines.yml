@@ -1,18 +1,7 @@
-##trigger: none
-trigger:
-  branches:
-    include:
-      - main
-  paths:
-    include:
-      - '*'
+trigger: none
 
-pr: 
-  branches:
-    include:
-      - '*'
 pool:
-  name: 'DXO Integration Agent Pool'
+  name: 'SonarQube Integration Agent Pool'
 
 variables:
   - template: variables/application-variables.yml
@@ -22,10 +11,12 @@ variables:
 
 
 stages:
+ - stage: CI
+ 
  - template: stages/cen_dotnet_PR_stage.yml  #Include the stage-level template
    parameters:
      stageName: 'PRValidation' # Specify the stage name
-     #condition: eq(variables['Build.Reason'], 'PullRequest')
+     condition: eq(variables['Build.Reason'], 'PullRequest')
    
  - template: stages/cen_dotnet_CI_stage.yml  # Include the stage-level templat
    parameters:

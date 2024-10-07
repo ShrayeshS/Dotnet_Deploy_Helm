@@ -1,0 +1,9 @@
+parameters:
+- name: values
+  type: string
+  default: ''
+  
+steps:
+    - script: |
+        sudo helm template $(Build.SourcesDirectory)/helm/dotnet --values $(Build.SourcesDirectory)/helm/dotnet/${{ parameters.values }} --debug
+      displayName: 'Helm Show Template'

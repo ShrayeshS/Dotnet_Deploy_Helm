@@ -1,0 +1,9 @@
+parameters:
+- name: acr
+  type: string
+  default: ''
+    
+steps:
+  - script: |
+      sudo az acr helm repo add --name ${{ parameters.acr }}.azurecr.io
+    displayName: 'Helm Repo Add'

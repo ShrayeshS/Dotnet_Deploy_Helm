@@ -1,0 +1,4 @@
+variables:
+  K8S_BASENAME: dsocontainerregistry    
+  ACRRG: DSOKITTest               
+  REPO_NAME: dotnet             

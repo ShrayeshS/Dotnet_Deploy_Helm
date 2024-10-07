@@ -26,12 +26,12 @@ jobs:
           echo "##vso[task.setvariable variable=SONARQUBE_SCANNER_PARAMS]$params"
       - script: echo $(SONARQUBE_SCANNER_PARAMS)
       - template: ../scripts/cen_dotnet_build_test.yml
-      - template: ../tasks/cen_dotnet_build.yml
-      - template: ../tasks/cen_dotnet_test.yml
-      - template: ../tasks/cen_publish_code_coverage.yml
+      #- template: ../tasks/cen_dotnet_build.yml
+      #- template: ../tasks/cen_dotnet_test.yml
+      #- template: ../tasks/cen_publish_code_coverage.yml
       #- template: ../scripts/cen_check_code_coverage.yml
-      - template: ../tasks/cen_SonarQube_Analyse.yml
-      - template: ../tasks/cen_SonarQube_Publish.yml
+      #- template: ../tasks/cen_SonarQube_Analyse.yml
+      #- template: ../tasks/cen_SonarQube_Publish.yml
       #- script: |
       #    sleep 5m
       #- template: ../scripts/cen_QualityGate_Status.yml

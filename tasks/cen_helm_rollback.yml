@@ -1,0 +1,22 @@
+parameters:
+- name: release
+  type: string
+  default: ''
+
+- name: env
+  type: string
+  default: ''
+
+- name: k8s_cluster
+  type: string
+  default: ''
+  
+steps:
+- task: HelmDeploy@1
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscription: 'DXO_Service_Connection'
+    azureResourceGroup: 'DXO_Integration_RG'
+    kubernetesCluster: '${{ parameters.k8s_cluster }}_${{ parameters.env }}'
+    command: 'rollback'
+    arguments: '${{ parameters.release }}-${{ parameters.env }}'

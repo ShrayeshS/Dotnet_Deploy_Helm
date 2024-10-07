@@ -1,0 +1,8 @@
+steps:
+  - script:
+      #!/bin/bash
+      # Save the output of the command into a variable named 'chart_version'
+      chart_version=$(awk '/version:/ {print $2}' RS='[:,]' $(Build.SourcesDirectory)/helm/dotnet/Chart.yaml);
+      echo $chart_version;
+      # Save the output of the command into a variable named 'app_version'
+      #app_version=$(grep 'appVersion' $(Build.SourcesDirectory)/helm/dotnet/Chart.yaml | awk -F '"' '{print $2}')

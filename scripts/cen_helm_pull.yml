@@ -1,0 +1,17 @@
+parameters:
+- name: acr
+  type: string
+  default: ''
+
+- name: repo
+  type: string
+  default: ''
+
+- name: chart_ver
+  type: string
+  default: ''
+  
+steps:
+  - script: |
+      sudo helm pull oci://${{ parameters.acr }}.azurecr.io/${{ parameters.repo }}/dotnet --version ${{ parameters.chart_ver }}
+    displayName: 'Helm Pull from ACR'

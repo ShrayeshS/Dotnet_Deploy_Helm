@@ -1,0 +1,16 @@
+parameters:
+- name: release
+  type: string
+  default: ''
+
+- name: env
+  type: string
+  default: ''
+  
+steps:
+  - script: |
+      sudo kubectl config current-context
+      echo "------------"
+      sudo kubectl config get-contexts
+      sudo helm uninstall ${{ parameters.release }}-${{ parameters.env }} -n default --debug --no-hooks
+    displayName: 'Helm Uninstall'
